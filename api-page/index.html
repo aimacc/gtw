@@ -1,277 +1,243 @@
  <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <link rel="icon" href="/src/icon.png" type="image/png">
 
-    <title id="page"></title>
+    <title>Payment Gateway API</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"/>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    />
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet"/>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    />
 
-    <link rel="stylesheet" href="/styles.css">
+    <style>
+
+        body{
+            background:#f5f5f5;
+            font-family:'Poppins',sans-serif;
+        }
+
+        .navbar{
+            background:white;
+            border-bottom:1px solid #eee;
+        }
+
+        .hero{
+            padding:50px 0 30px;
+        }
+
+        .badge-api{
+            background:#111;
+            color:white;
+            padding:6px 14px;
+            border-radius:999px;
+            font-size:12px;
+        }
+
+        .card{
+            border:none;
+            border-radius:18px;
+            overflow:hidden;
+        }
+
+        pre{
+            background:#f8f9fa;
+            padding:14px;
+            border-radius:10px;
+            font-size:13px;
+            margin:0;
+        }
+
+        .response-box{
+            background:#111;
+            color:white;
+            padding:15px;
+            border-radius:12px;
+            margin-top:20px;
+        }
+
+        .qris-img{
+            width:100%;
+            max-width:260px;
+            border-radius:12px;
+        }
+
+        .endpoint{
+            font-size:14px;
+            font-weight:500;
+        }
+
+        .section-title{
+            font-size:15px;
+            font-weight:600;
+            margin-bottom:10px;
+        }
+
+    </style>
 
 </head>
 <body>
 
-    <!-- LOADING -->
-    <div id="loadingScreen">
-        <div class="spinner-wrapper">
-            <div class="spinner-border text-dark mb-2" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <p>Waitt...</p>
-        </div>
-    </div>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" style="display: flex; align-items: center;">
-                <span id="header" class="me-2"></span>
-
-                <div id="versionHeader"
-                    style="
-                    background-color: #333;
-                    color: white;
-                    padding: 4px 12px;
-                    font-size: 12px;
-                    border-radius: 100px;
-                ">
-                </div>
-
-            </a>
-        </div>
-    </nav>
-
-    <!-- CONTENT -->
     <div class="container">
 
-        <!-- BANNER -->
-        <img
-            id="dynamicImage"
-            class="banner mb-4"
-            style="border-radius: 8px;"
-            src=""
-        >
+        <a class="navbar-brand fw-semibold">
+            PAYMENT GATEWAY API
+        </a>
 
-        <!-- NAME -->
-        <div id="nameContainer" style="display: flex; align-items: center;">
+    </div>
 
-            <h1 id="name"
-                style="
-                font-size: 32px;
-                margin-right: 10px;
-            ">
+</nav>
+
+<!-- HERO -->
+<div class="container hero">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="fw-bold">
+                QRIS Payment Gateway
             </h1>
 
-            <div id="version"
-                style="
-                background-color: #333;
-                color: white;
-                padding: 5px 12px;
-                font-size: 12px;
-                border-radius: 100px;
-            ">
-            </div>
-
+            <p class="text-muted mb-0">
+                Create & Check Dynamic QRIS Payment
+            </p>
         </div>
 
-        <p id="description" class="lead mb-3"></p>
-
-        <div id="apiLinks" class="mb-5"></div>
-
-        <input
-            type="text"
-            id="searchInput"
-            class="form-control mb-5"
-            placeholder="Search API..."
-        >
-
-        <!-- PAYMENT GATEWAY -->
-        <div class="card border-0 shadow-sm mb-5">
-
-            <div class="card-body">
-
-                <div style="
-                    display:flex;
-                    justify-content:space-between;
-                    align-items:center;
-                ">
-
-                    <div>
-                        <h4 class="mb-1">Payment Gateway</h4>
-
-                        <p class="text-muted mb-0" style="font-size:14px;">
-                            Create & Check QRIS Payment
-                        </p>
-                    </div>
-
-                    <div style="
-                        background:#111;
-                        color:white;
-                        padding:5px 14px;
-                        border-radius:999px;
-                        font-size:12px;
-                    ">
-                        QRIS
-                    </div>
-
-                </div>
-
-                <hr>
-
-                <!-- INPUT -->
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Nominal Payment
-                    </label>
-
-                    <div class="input-group">
-
-                        <input
-                            type="number"
-                            id="nominalInput"
-                            class="form-control"
-                            placeholder="Masukkan nominal"
-                        >
-
-                        <button
-                            class="btn btn-dark"
-                            onclick="createPayment()"
-                        >
-                            Create
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <!-- RESULT -->
-                <div id="paymentResult" style="display:none;">
-
-                    <div class="alert alert-dark">
-
-                        <div id="trxInfo"></div>
-
-                    </div>
-
-                    <!-- QRIS -->
-                    <div class="text-center">
-
-                        <img
-                            id="qrisImage"
-                            src=""
-                            style="
-                                max-width:250px;
-                                border-radius:10px;
-                            "
-                        >
-
-                    </div>
-
-                    <!-- BUTTON -->
-                    <div class="d-grid mt-3">
-
-                        <button
-                            class="btn btn-success"
-                            onclick="checkPayment()"
-                        >
-                            Cek Pembayaran
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="badge-api">
+            REST API
         </div>
-
-        <!-- API CONTENT -->
-        <div class="tab-content" id="apiContent"></div>
 
     </div>
 
-    <!-- MODAL -->
-    <div class="modal fade"
-        id="apiResponseModal"
-        tabindex="-1"
-        aria-labelledby="apiResponseModalLabel"
-        aria-hidden="true">
+    <!-- ====================================== -->
+    <!-- CREATE PAYMENT -->
+    <!-- ====================================== -->
 
-        <div class="modal-dialog modal-dialog-centered" id="modalDialog">
+    <div class="card shadow-sm mb-5">
 
-            <div class="modal-content">
+        <div class="card-body p-4">
 
-                <div class="modal-header">
+            <div class="d-flex justify-content-between align-items-center">
 
-                    <div>
+                <div>
+                    <h4 class="mb-1">
+                        Create Payment
+                    </h4>
 
-                        <h5 class="modal-title" id="apiResponseModalLabel"></h5>
+                    <p class="text-muted mb-0">
+                        Generate QRIS Payment
+                    </p>
+                </div>
 
-                        <p class="modal-desc text-muted mb-0"
-                            id="apiResponseModalDesc"
-                            style="font-size: 14px;">
-                        </p>
+                <div class="badge bg-dark">
+                    POST
+                </div>
 
-                    </div>
+            </div>
+
+            <hr>
+
+            <!-- ENDPOINT -->
+            <div class="mb-4">
+
+                <div class="section-title">
+                    Endpoint
+                </div>
+
+                <pre class="endpoint">/payment?action=create&nominal=1000</pre>
+
+            </div>
+
+            <!-- INPUT -->
+            <div class="mb-4">
+
+                <div class="section-title">
+                    Try Request
+                </div>
+
+                <div class="input-group">
+
+                    <input
+                        type="number"
+                        id="nominalInput"
+                        class="form-control"
+                        placeholder="Masukkan nominal"
+                    >
 
                     <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close">
+                        class="btn btn-dark"
+                        onclick="createPayment()"
+                    >
+                        Create
                     </button>
 
                 </div>
 
-                <div class="modal-body">
+            </div>
 
-                    <pre id="apiEndpoint"
-                        style="
-                        background-color: #f8f9fa;
-                        padding: 10px;
-                        border-radius: 5px;
-                    ">
-                    </pre>
+            <!-- RESULT -->
+            <div id="paymentResult" style="display:none;">
 
-                    <div id="apiQueryInputContainer"></div>
+                <div class="response-box">
 
-                    <div id="apiResponseLoading"
-                        class="d-none d-flex justify-content-center align-items-center"
-                        style="height: 100px;">
-
-                        <div class="spinner-border custom-spinner" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-
-                    </div>
-
-                    <pre id="apiResponseContent"
-                        class="d-none mt-2"
-                        style="
-                        background-color: #f8f9fa;
-                        padding: 10px;
-                        border-radius: 5px;
-                    ">
-                    </pre>
+                    <div id="trxInfo"></div>
 
                 </div>
 
-                <div class="modal-footer">
+                <div class="text-center mt-4">
 
-                    <button
-                        id="submitQueryBtn"
-                        class="btn btn-dark">
-                        Submit
-                    </button>
+                    <img
+                        id="qrisImage"
+                        class="qris-img"
+                        src=""
+                    >
 
                 </div>
+
+            </div>
+
+            <!-- SUCCESS RESPONSE -->
+            <div class="mt-5">
+
+                <div class="section-title">
+                    Success Response
+                </div>
+
+<pre>{
+  "status": true,
+  "result": {
+    "trxid": "AB12CD34",
+    "amount": 1054,
+    "status": "PENDING",
+    "expired": "5 Menit",
+    "qris": "https://..."
+  }
+}</pre>
+
+            </div>
+
+            <!-- FAILED RESPONSE -->
+            <div class="mt-4">
+
+                <div class="section-title">
+                    Failed Response
+                </div>
+
+<pre>{
+  "status": false,
+  "message": "Masukkan nominal"
+}</pre>
 
             </div>
 
@@ -279,118 +245,253 @@
 
     </div>
 
-    <!-- JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- ====================================== -->
+    <!-- CHECK PAYMENT -->
+    <!-- ====================================== -->
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="card shadow-sm mb-5">
 
-    <script src="/script.js"></script>
+        <div class="card-body p-4">
 
-    <!-- PAYMENT SCRIPT -->
-    <script>
+            <div class="d-flex justify-content-between align-items-center">
 
-    let currentTrx = null
+                <div>
 
-    // CREATE PAYMENT
-    async function createPayment() {
+                    <h4 class="mb-1">
+                        Check Payment
+                    </h4>
 
-        const nominal =
-        document.getElementById("nominalInput").value
+                    <p class="text-muted mb-0">
+                        Check Transaction Status
+                    </p>
 
-        if (!nominal) {
-            return alert("Masukkan nominal")
+                </div>
+
+                <div class="badge bg-success">
+                    GET
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- ENDPOINT -->
+            <div class="mb-4">
+
+                <div class="section-title">
+                    Endpoint
+                </div>
+
+                <pre class="endpoint">/payment?action=cekpay&trxid=AB12CD34</pre>
+
+            </div>
+
+            <!-- INPUT -->
+            <div class="mb-4">
+
+                <div class="section-title">
+                    Try Request
+                </div>
+
+                <div class="input-group">
+
+                    <input
+                        type="text"
+                        id="trxInput"
+                        class="form-control"
+                        placeholder="Masukkan TRX ID"
+                    >
+
+                    <button
+                        class="btn btn-success"
+                        onclick="checkPayment()"
+                    >
+                        Check
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- RESULT -->
+            <div id="checkResult" style="display:none;">
+
+                <div class="response-box">
+
+                    <div id="checkInfo"></div>
+
+                </div>
+
+            </div>
+
+            <!-- SUCCESS RESPONSE -->
+            <div class="mt-5">
+
+                <div class="section-title">
+                    Success Response
+                </div>
+
+<pre>{
+  "status": true,
+  "result": {
+    "trxid": "AB12CD34",
+    "amount": 1054,
+    "status": "PAID",
+    "brand": "QRIS",
+    "tanggal": "2026-05-23",
+    "keterangan": "Pembayaran QRIS"
+  }
+}</pre>
+
+            </div>
+
+            <!-- PENDING RESPONSE -->
+            <div class="mt-4">
+
+                <div class="section-title">
+                    Pending Response
+                </div>
+
+<pre>{
+  "status": true,
+  "result": {
+    "trxid": "AB12CD34",
+    "amount": 1054,
+    "status": "PENDING"
+  }
+}</pre>
+
+            </div>
+
+            <!-- FAILED RESPONSE -->
+            <div class="mt-4">
+
+                <div class="section-title">
+                    Failed Response
+                </div>
+
+<pre>{
+  "status": false,
+  "message": "Transaksi tidak ditemukan"
+}</pre>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JS -->
+<script>
+
+let currentTrx = null
+
+// ======================================
+// CREATE PAYMENT
+// ======================================
+
+async function createPayment() {
+
+    const nominal =
+    document.getElementById("nominalInput").value
+
+    if (!nominal) {
+        return alert("Masukkan nominal")
+    }
+
+    try {
+
+        const response = await fetch(
+        `/payment?action=create&nominal=${nominal}`
+        )
+
+        const data = await response.json()
+
+        if (!data.status) {
+            return alert(data.message)
         }
 
-        try {
+        currentTrx = data.result.trxid
 
-            const response = await fetch(
-            `/payment?action=create&nominal=${nominal}`
-            )
+        document.getElementById(
+        "paymentResult"
+        ).style.display = "block"
 
-            const data = await response.json()
+        document.getElementById(
+        "trxInfo"
+        ).innerHTML = `
+        <b>TRX ID:</b> ${data.result.trxid}<br>
+        <b>Nominal:</b> Rp${data.result.amount}<br>
+        <b>Status:</b> ${data.result.status}<br>
+        <b>Expired:</b> ${data.result.expired}
+        `
 
-            if (!data.status) {
-                return alert(data.message)
-            }
+        document.getElementById(
+        "qrisImage"
+        ).src = data.result.qris
 
-            currentTrx = data.result.trxid
+    } catch (e) {
 
-            document.getElementById(
-            "paymentResult"
-            ).style.display = "block"
+        console.log(e)
 
-            document.getElementById("trxInfo").innerHTML = `
-            <b>TRX ID:</b> ${data.result.trxid}<br>
-            <b>Nominal:</b> Rp${data.result.amount}<br>
-            <b>Status:</b> ${data.result.status}<br>
-            <b>Expired:</b> ${data.result.expired}
-            `
-
-            document.getElementById(
-            "qrisImage"
-            ).src = data.result.qris
-
-        } catch (e) {
-
-            console.log(e)
-
-            alert("Gagal membuat pembayaran")
-
-        }
+        alert("Gagal membuat pembayaran")
 
     }
 
-    // CHECK PAYMENT
-    async function checkPayment() {
+}
 
-        if (!currentTrx) {
-            return alert("Tidak ada transaksi")
+// ======================================
+// CHECK PAYMENT
+// ======================================
+
+async function checkPayment() {
+
+    const trxid =
+    document.getElementById("trxInput").value
+
+    if (!trxid) {
+        return alert("Masukkan TRX ID")
+    }
+
+    try {
+
+        const response = await fetch(
+        `/payment?action=cekpay&trxid=${trxid}`
+        )
+
+        const data = await response.json()
+
+        if (!data.status) {
+            return alert(data.message)
         }
 
-        try {
+        document.getElementById(
+        "checkResult"
+        ).style.display = "block"
 
-            const response = await fetch(
-            `/payment?action=cekpay&trxid=${currentTrx}`
-            )
+        document.getElementById(
+        "checkInfo"
+        ).innerHTML = `
+        <b>TRX ID:</b> ${data.result.trxid}<br>
+        <b>Nominal:</b> Rp${data.result.amount}<br>
+        <b>Status:</b> ${data.result.status}<br>
+        <b>Brand:</b> ${data.result.brand || "-"}<br>
+        <b>Tanggal:</b> ${data.result.tanggal || "-"}
+        `
 
-            const data = await response.json()
+    } catch (e) {
 
-            if (!data.status) {
-                return alert(data.message)
-            }
+        console.log(e)
 
-            // PENDING
-            if (data.result.status === "PENDING") {
-
-                alert("Pembayaran masih pending")
-
-            } else {
-
-                alert(
-                `Pembayaran berhasil!\nTRX ID: ${data.result.trxid}`
-                )
-
-                document.getElementById("trxInfo").innerHTML = `
-                <b>TRX ID:</b> ${data.result.trxid}<br>
-                <b>Nominal:</b> Rp${data.result.amount}<br>
-                <b>Status:</b> PAID<br>
-                <b>Brand:</b> ${data.result.brand}<br>
-                <b>Tanggal:</b> ${data.result.tanggal}
-                `
-
-            }
-
-        } catch (e) {
-
-            console.log(e)
-
-            alert("Gagal cek pembayaran")
-
-        }
+        alert("Gagal cek pembayaran")
 
     }
 
-    </script>
+}
+
+</script>
 
 </body>
 </html>
