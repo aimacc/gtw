@@ -1,63 +1,47 @@
  const axios = require("axios")
 const crypto = require("crypto")
-const fs = require("fs")
 
-// ==========================================
-// DATABASE FILE
-// ==========================================
+const db = require("../../firebase")
 
-const DB_FILE = "./trx.json"
+const {
+doc,
+setDoc,
+getDoc,
+deleteDoc
+} = require("firebase/firestore")
 
-if (!fs.existsSync(DB_FILE)) {
-fs.writeFileSync(DB_FILE, JSON.stringify({}))
-}
-
-function loadDB() {
-return JSON.parse(fs.readFileSync(DB_FILE))
-}
-
-function saveDB(data) {
-fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2))
-}
-
-// ==========================================
-// API KEY
-// ==========================================
-
-const APIKEY = "jp_99b59faac0459bb3c24bc011e3ea"
-
-// ==========================================
-// EXPORT ROUTE
-// ==========================================
+const APIKEY =
+"jp_99b59faac0459bb3c24bc011e3ea"
 
 module.exports = function(app) {
-
-// ==========================================
-// PAYMENT ROUTE
-// ==========================================
 
 app.get("/payment", async (req, res) => {
 
 const { action } = req.query
 
-// ==========================================
+// ====================================
 // CREATE PAYMENT
-// ==========================================
+// ====================================
 
 if (action === "create") {
 
 try {
 
-const nominal = parseInt(req.query.nominal)
+const nominal =
+parseInt(req.query.nominal)
 
 if (!nominal) {
-return res.status(400).json({
+
+return res.json({
 status: false,
 message: "Masukkan nominal"
 })
+
 }
 
-const random = Math.floor(Math.random() * 99) + 1
+const random =
+Math.floor(Math.random() * 99) + 1
+
 const amount = nominal + random
 
 const trxid = crypto
@@ -71,7 +55,7 @@ const { data } = await axios.get(
 
 if (!data.status) {
 
-return res.status(500).json({
+return res.json({
 status: false,
 message: "Gagal membuat QRIS"
 })
@@ -82,30 +66,25 @@ const qris =
 data.data?.qris_url ||
 data.data?.qr_image
 
-// ==========================================
-// LOAD DATABASE
-// ==========================================
+// ====================================
+// SAVE FIREBASE
+// ====================================
 
-const db = loadDB()
-
-// ==========================================
-// SAVE TRANSACTION
-// ==========================================
-
-db[trxid] = {
+await setDoc(
+doc(db, "transactions", trxid),
+{
 trxid,
 amount,
 status: "PENDING",
 expired: Date.now() + 300000
 }
+)
 
-saveDB(db)
-
-// ==========================================
+// ====================================
 // RESPONSE
-// ==========================================
+// ====================================
 
-return res.status(200).json({
+return res.json({
 status: true,
 result: {
 trxid,
@@ -120,7 +99,7 @@ qris
 
 console.log(e)
 
-return res.status(500).json({
+return res.json({
 status: false,
 message: "Internal server error"
 })
@@ -129,9 +108,9 @@ message: "Internal server error"
 
 }
 
-// ==========================================
-// CEK PAYMENT
-// ==========================================
+// ====================================
+// CHECK PAYMENT
+// ====================================
 
 if (action === "cekpay") {
 
@@ -141,50 +120,52 @@ const trxid = req.query.trxid
 
 if (!trxid) {
 
-return res.status(400).json({
+return res.json({
 status: false,
 message: "Masukkan trxid"
 })
 
 }
 
-// ==========================================
-// LOAD DATABASE
-// ==========================================
+// ====================================
+// GET FIREBASE
+// ====================================
 
-const db = loadDB()
+const trxRef =
+doc(db, "transactions", trxid)
 
-const trx = db[trxid]
+const trxSnap =
+await getDoc(trxRef)
 
-if (!trx) {
+if (!trxSnap.exists()) {
 
-return res.status(404).json({
+return res.json({
 status: false,
 message: "Transaksi tidak ditemukan"
 })
 
 }
 
-// ==========================================
-// EXPIRED CHECK
-// ==========================================
+const trx = trxSnap.data()
+
+// ====================================
+// EXPIRED
+// ====================================
 
 if (Date.now() > trx.expired) {
 
-delete db[trxid]
+await deleteDoc(trxRef)
 
-saveDB(db)
-
-return res.status(400).json({
+return res.json({
 status: false,
 message: "Transaksi expired"
 })
 
 }
 
-// ==========================================
+// ====================================
 // GET MUTASI
-// ==========================================
+// ====================================
 
 const { data } = await axios.get(
 `https://jagopay.my.id/api.php?apikey=${APIKEY}&action=qris_mutasi&page=1`
@@ -192,36 +173,38 @@ const { data } = await axios.get(
 
 if (!data.status) {
 
-return res.status(500).json({
+return res.json({
 status: false,
 message: "Gagal mengambil mutasi"
 })
 
 }
 
-const mutasi = data.data?.mutasi || []
+const mutasi =
+data.data?.mutasi || []
 
-// ==========================================
+// ====================================
 // MATCH PAYMENT
-// ==========================================
+// ====================================
 
 const cocok = mutasi.find(v => {
 
 const kredit = parseInt(
-String(v.kredit).replace(/\./g, "")
+String(v.kredit)
+.replace(/\./g, "")
 )
 
 return kredit === trx.amount
 
 })
 
-// ==========================================
+// ====================================
 // PENDING
-// ==========================================
+// ====================================
 
 if (!cocok) {
 
-return res.status(200).json({
+return res.json({
 status: true,
 result: {
 trxid,
@@ -232,19 +215,17 @@ status: "PENDING"
 
 }
 
-// ==========================================
-// DELETE PAID TRANSACTION
-// ==========================================
+// ====================================
+// DELETE TRANSACTION
+// ====================================
 
-delete db[trxid]
+await deleteDoc(trxRef)
 
-saveDB(db)
+// ====================================
+// SUCCESS
+// ====================================
 
-// ==========================================
-// SUCCESS RESPONSE
-// ==========================================
-
-return res.status(200).json({
+return res.json({
 status: true,
 result: {
 trxid,
@@ -260,7 +241,7 @@ keterangan: cocok.keterangan
 
 console.log(e)
 
-return res.status(500).json({
+return res.json({
 status: false,
 message: "Internal server error"
 })
@@ -269,11 +250,11 @@ message: "Internal server error"
 
 }
 
-// ==========================================
+// ====================================
 // INVALID ACTION
-// ==========================================
+// ====================================
 
-return res.status(400).json({
+return res.json({
 status: false,
 message: "Action tidak valid"
 })
