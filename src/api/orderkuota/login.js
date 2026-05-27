@@ -1,28 +1,31 @@
-import express from 'express'
-import { loginRequest } from '../../lib/orderkuota.js'
+const { loginRequest } = require('../../lib/orderkuota')
 
-const router = express.Router()
+module.exports = (app) => {
 
-router.get('/', async (req, res) => {
-  try {
-    const { username, password } = req.query
+  app.get('/api/orderkuota/login', async (req, res) => {
+    try {
+      const { username, password } = req.query
 
-    if (!username || !password) {
-      return res.status(400).json({
+      if (!username || !password) {
+        return res.status(400).json({
+          status: false,
+          message: 'username & password required'
+        })
+      }
+
+      const result = await loginRequest(username, password)
+
+      res.json({
+        status: true,
+        result
+      })
+
+    } catch (e) {
+      res.status(500).json({
         status: false,
-        message: 'username & password required'
+        error: e.message
       })
     }
+  })
 
-    const result = await loginRequest(username, password)
-
-    res.json(result)
-  } catch (e) {
-    res.status(500).json({
-      status: false,
-      error: e.message
-    })
-  }
-})
-
-export default router
+}
