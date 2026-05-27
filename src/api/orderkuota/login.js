@@ -1,6 +1,9 @@
+import express from 'express'
 import { loginRequest } from '../../lib/orderkuota.js'
 
-export default async function handler(req, res) {
+const router = express.Router()
+
+router.get('/', async (req, res) => {
   try {
     const { username, password } = req.query
 
@@ -13,11 +16,13 @@ export default async function handler(req, res) {
 
     const result = await loginRequest(username, password)
 
-    res.status(200).json(result)
+    res.json(result)
   } catch (e) {
     res.status(500).json({
       status: false,
       error: e.message
     })
   }
-}
+})
+
+export default router
